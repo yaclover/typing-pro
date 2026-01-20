@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Pro | Master Your Speed</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1 class="logo">TYPING<span>PRO</span></h1>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="label">WPM</span>
+                    <span id="wpm" class="value">0</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Accuracy</span>
+                    <span id="accuracy" class="value">100%</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Time</span>
+                    <span id="timer" class="value">60</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="typing-container">
+                <div id="text-display" class="text-display">
+                    <!-- Text will be injected here -->
+                    <div class="loader">Initializing...</div>
+                </div>
+                <input type="text" id="typing-input" class="typing-input" autocomplete="off" autofocus>
+            </div>
+
+            <div class="controls">
+                <button id="restart-btn" class="btn-primary">Restart Test</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Press any key to start typing • Focus on speed and accuracy</p>
+        </footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
