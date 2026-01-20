@@ -10,7 +10,6 @@ const sentences = [
 ];
 
 let currentSentence = "";
-let characterIndex = 0;
 let errors = 0;
 let startTime = null;
 let timerInterval = null;
@@ -27,12 +26,11 @@ const restartBtn = document.getElementById('restart-btn');
 function initGame() {
     clearInterval(timerInterval);
     timeLeft = testDuration;
-    characterIndex = 0;
     errors = 0;
     startTime = null;
-    
+
     currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
-    
+
     // Create character elements
     textDisplay.innerHTML = '';
     currentSentence.split('').forEach(char => {
@@ -41,36 +39,49 @@ function initGame() {
         charSpan.innerText = char;
         textDisplay.appendChild(charSpan);
     });
-    
-    updateDisplay();
+
     typingInput.value = '';
+    updateDisplay();
     typingInput.focus();
 }
 
 function updateDisplay() {
+    const userInput = typingInput.value;
     const chars = textDisplay.querySelectorAll('.char');
+    let currentErrors = 0;
+
     chars.forEach((char, index) => {
-        char.classList.remove('current');
-        if (index === characterIndex) {
+        char.classList.remove('correct', 'incorrect', 'current');
+
+        if (index < userInput.length) {
+            if (userInput[index] === currentSentence[index]) {
+                char.classList.add('correct');
+            } else {
+                char.classList.add('incorrect');
+                currentErrors++;
+            }
+        } else if (index === userInput.length) {
             char.classList.add('current');
         }
     });
 
+    errors = currentErrors;
     timerDisplay.innerText = timeLeft;
-    wpmDisplay.innerText = calculateWPM();
-    accuracyDisplay.innerText = calculateAccuracy() + '%';
+    wpmDisplay.innerText = calculateWPM(userInput.length);
+    accuracyDisplay.innerText = calculateAccuracy(userInput.length, currentErrors) + '%';
 }
 
-function calculateWPM() {
+function calculateWPM(charCount) {
     if (!startTime) return 0;
     const timeElapsed = (Date.now() - startTime) / 1000 / 60; // in minutes
-    const wordsTyped = characterIndex / 5;
+    if (timeElapsed <= 0) return 0;
+    const wordsTyped = charCount / 5;
     return Math.round(wordsTyped / timeElapsed) || 0;
 }
 
-function calculateAccuracy() {
-    if (characterIndex === 0) return 100;
-    const accuracy = ((characterIndex - errors) / characterIndex) * 100;
+function calculateAccuracy(total, errors) {
+    if (total === 0) return 100;
+    const accuracy = ((total - errors) / total) * 100;
     return Math.max(0, Math.round(accuracy));
 }
 
@@ -88,45 +99,40 @@ function startTimer() {
 function endGame() {
     clearInterval(timerInterval);
     typingInput.disabled = true;
-    alert(`Game Over! WPM: ${calculateWPM()} | Accuracy: ${calculateAccuracy()}%`);
+    const finalWpm = wpmDisplay.innerText;
+    const finalAccuracy = accuracyDisplay.innerText;
+    alert(`Game Over! WPM: ${finalWpm} | Accuracy: ${finalAccuracy}`);
 }
 
 typingInput.addEventListener('input', (e) => {
-    if (!startTime) startTimer();
-
-    const charTyped = e.target.value.slice(-1);
-    const chars = textDisplay.querySelectorAll('.char');
-
-    if (characterIndex < currentSentence.length) {
-        if (charTyped === currentSentence[characterIndex]) {
-            chars[characterIndex].classList.add('correct');
-        } else {
-            chars[characterIndex].classList.add('incorrect');
-            errors++;
-        }
-        characterIndex++;
-        
-        if (characterIndex === currentSentence.length) {
-            // Pick a new sentence but keep going until time runs out
-            currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
-            const newChars = currentSentence.split('').map(char => {
-                const span = document.createElement('span');
-                span.classList.add('char');
-                span.innerText = char;
-                return span;
-            });
-            textDisplay.innerHTML = '';
-            newChars.forEach(c => textDisplay.appendChild(c));
-            characterIndex = 0;
-        }
-        
-        updateDisplay();
+    if (!startTime && typingInput.value.length > 0) {
+        startTimer();
     }
+
+    if (typingInput.value.length >= currentSentence.length) {
+        // Handle completion of a sentence
+        if (typingInput.value === currentSentence) {
+            // Pick a new sentence and reset input
+            currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
+            textDisplay.innerHTML = '';
+            currentSentence.split('').forEach(char => {
+                const charSpan = document.createElement('span');
+                charSpan.classList.add('char');
+                charSpan.innerText = char;
+                textDisplay.appendChild(charSpan);
+            });
+            typingInput.value = '';
+        }
+    }
+
+    updateDisplay();
 });
 
-// Focus input when clicking anywhere on text display
+// Focus input when clicking anywhere on app
 document.addEventListener('click', () => {
-    typingInput.focus();
+    if (!typingInput.disabled) {
+        typingInput.focus();
+    }
 });
 
 restartBtn.addEventListener('click', () => {
