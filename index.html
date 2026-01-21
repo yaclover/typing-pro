@@ -9,47 +9,106 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
     <div id="app">
-        <header>
-            <h1 class="logo">TYPING<span>PRO</span></h1>
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <span class="label">WPM</span>
+        <header id="header">
+            <div class="header-main">
+                <h1 class="logo">TYPING<span>PRO</span></h1>
+                <div class="config-bar">
+                    <div class="config-group" id="mode-select">
+                        <button class="config-btn active" data-mode="time">time</button>
+                        <button class="config-btn" data-mode="words">words</button>
+                    </div>
+                    <div class="config-group" id="time-options">
+                        <button class="config-btn" data-value="15">15</button>
+                        <button class="config-btn active" data-value="30">30</button>
+                        <button class="config-btn" data-value="60">60</button>
+                        <button class="config-btn" data-value="120">120</button>
+                    </div>
+                    <div class="config-group hidden" id="word-options">
+                        <button class="config-btn" data-value="10">10</button>
+                        <button class="config-btn" data-value="25">25</button>
+                        <button class="config-btn active" data-value="50">50</button>
+                        <button class="config-btn" data-value="100">100</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="active-metrics">
+                <div class="metric">
+                    <span class="label">wpm</span>
                     <span id="wpm" class="value">0</span>
                 </div>
-                <div class="metric-card">
-                    <span class="label">Accuracy</span>
+                <div class="metric">
+                    <span class="label">acc</span>
                     <span id="accuracy" class="value">100%</span>
                 </div>
-                <div class="metric-card">
-                    <span class="label">Time</span>
-                    <span id="timer" class="value">60</span>
+                <div class="metric">
+                    <span id="timer-label" class="label">time</span>
+                    <span id="timer" class="value">30</span>
                 </div>
             </div>
         </header>
 
         <main>
-            <div class="typing-container">
+            <div id="typing-area" class="typing-container">
                 <div id="text-display" class="text-display">
-                    <!-- Text will be injected here -->
                     <div class="loader">Initializing...</div>
                 </div>
                 <input type="text" id="typing-input" class="typing-input" autocomplete="off" autofocus
                     spellcheck="false" autocapitalize="off">
             </div>
 
-            <div class="controls">
-                <button id="restart-btn" class="btn-primary">Restart Test</button>
+            <div id="results-screen" class="results-container hidden">
+                <div class="results-header">
+                    <h2>Test Completed</h2>
+                    <div class="main-stats">
+                        <div class="stat-large">
+                            <span class="label">wpm</span>
+                            <span id="final-wpm" class="value">0</span>
+                        </div>
+                        <div class="stat-large">
+                            <span class="label">accuracy</span>
+                            <span id="final-accuracy" class="value">100%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="results-content">
+                    <div class="chart-container">
+                        <canvas id="results-chart"></canvas>
+                    </div>
+                    <div class="secondary-stats">
+                        <div class="stat">
+                            <span class="label">test type</span>
+                            <span id="stat-test-type" class="value">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">raw wpm</span>
+                            <span id="stat-raw-wpm" class="value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">errors</span>
+                            <span id="stat-errors" class="value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">consistency</span>
+                            <span id="stat-consistency" class="value">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="results-actions">
+                    <button id="restart-btn" class="btn-primary">Restart (Tab)</button>
+                </div>
             </div>
         </main>
 
-        <footer>
-            <p>Press any key to start typing • Focus on speed and accuracy</p>
+        <footer id="footer">
+            <p><kbd>tab</kbd> to restart test • <kbd>esc</kbd> to stop</p>
         </footer>
     </div>
     <script type="module" src="/src/main.js"></script>

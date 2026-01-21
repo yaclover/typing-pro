@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Antigravity Skills & Workspaces
+/skills/
+/brain/
+.gemini/
+
