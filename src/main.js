@@ -55,6 +55,22 @@ const configBtns = document.querySelectorAll('.config-btn');
 const timeOptions = document.getElementById('time-options');
 const wordOptions = document.getElementById('word-options');
 
+// Audio Context for subtle typing sounds
+let audioCtx = null;
+function playClick(pitch = 400) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(pitch, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+}
+
 let chart = null;
 
 function initGame() {
@@ -83,12 +99,14 @@ function initGame() {
     // Reset UI
     resultsScreen.classList.add('hidden');
     typingArea.classList.remove('hidden');
+    typingArea.classList.remove('blur');
     app.classList.remove('focus-mode');
     wpmDisplay.innerText = '0';
     accuracyDisplay.innerText = '100%';
     typingInput.value = '';
     typingInput.disabled = false;
-    typingInput.focus();
+
+    setTimeout(() => typingInput.focus(), 100);
 
     updateCursor();
 }
@@ -288,9 +306,28 @@ typingInput.addEventListener('input', (e) => {
         timerDisplay.innerText = `${actualWords}/${state.wordLimit}`;
     }
 
+    // Audio and Haptic feedback
+    if (state.text[lastTypedIdx] === val[lastTypedIdx]) {
+        playClick(400);
+    } else {
+        playClick(200);
+        if (navigator.vibrate) navigator.vibrate(20);
+    }
+
     accuracyDisplay.innerText = calculateAccuracy() + '%';
     wpmDisplay.innerText = calculateWPM();
     updateCursor();
+});
+
+// Focus Handling
+typingInput.addEventListener('blur', () => {
+    if (!state.isGameOver) {
+        typingArea.classList.add('blur');
+    }
+});
+
+typingInput.addEventListener('focus', () => {
+    typingArea.classList.remove('blur');
 });
 
 // Config Handling
